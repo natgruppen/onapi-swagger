@@ -1,0 +1,831 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "ON-API",
+    "description": "Open Networks API (ON-API) är ett leverantörsoberoende öppet API för effektivt systemsamarbete mellan tjänsteleverantörer (TL eller SP), öppna nät (ÖN) och kommunikationsoperatörer (KO eller CO).",
+    "version": "2.3"
+  },
+  "servers": [
+    {
+      "url": "https://access.falustadsnat.se/api/piapi/2.3"
+    }
+  ],
+  "paths": {
+    "/accesses": {
+      "get": {
+        "tags": [
+          "Feasibility"
+        ],
+        "summary": "Returns all access that TL can deliver to.",
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Feasibility"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/accesses/{accessId}": {
+      "get": {
+        "tags": [
+          "Availability"
+        ],
+        "summary": "Returns an access.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "accessId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Availability"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders": {
+      "post": {
+        "tags": [
+          "Service Activation"
+        ],
+        "summary": "Orders a service",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceActivationOrder"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceActivationOrderOK"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "CREATED",
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "URL för status av order"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceActivationOrderResponseCreated"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceActivationOrderBadRequest"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/{Order}": {
+      "get": {
+        "tags": [
+          "Service Activation"
+        ],
+        "summary": "Status of order",
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Order",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceActivationGetOrder"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orderevents": {
+      "get": {
+        "tags": [
+          "Order Events"
+        ],
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "since",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderEvents"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/option82/{Option82}": {
+      "get": {
+        "tags": [
+          "Option82 Lookup"
+        ],
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Option82",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Option82"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/accesses/{AccessId}/link": {
+      "get": {
+        "tags": [
+          "Link Status"
+        ],
+        "summary": "Returns link status for access.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "AccessId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "basicAuth": {
+        "type": "http",
+        "scheme": "basic"
+      }
+    },
+    "schemas": {
+      "LinkStatusClients": {
+        "type": "object",
+        "properties": {
+          "mac": {
+            "type": "string",
+            "description": "MAC-adress på enheten",
+            "example": "DE:AD:BE:EF:00:01"
+          },
+          "ip": {
+            "type": "string",
+            "description": "Tilldelad IPv4-adress på enheten",
+            "example": "10.10.1.181"
+          }
+        }
+      },
+      "LinkStatusUp": {
+        "type": "object",
+        "properties": {
+          "since": {
+            "type": "string",
+            "description": "Anger tidpunkt då porten gick up och sedan när den haft länk",
+            "example": "2014-08-14T14:09:23Z"
+          },
+          "mbps": {
+            "type": "integer",
+            "description": "Anger länkens faktiskta länkhastighet",
+            "example": 1000
+          },
+          "clients": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkStatusClients"
+            }
+          }
+        }
+      },
+      "LinkStatus": {
+        "type": "object",
+        "properties": {
+          "link": {
+            "type": "string",
+            "description": "Anger status på länken",
+            "example": "UP"
+          },
+          "up": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkStatusUp"
+            }
+          }
+        }
+      },
+      "Option82": {
+        "type": "object",
+        "properties": {
+          "accessId": {
+            "type": "string",
+            "description": "Ett unikt ID på en access.",
+            "example": "STTA0001"
+          }
+        }
+      },
+      "OrderEventsOrder": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "example": "/api/2.3.1/orders/ec4bc754-6a30-11e2-a585-4fc569183061"
+          },
+          "accessId": {
+            "type": "string",
+            "description": "Ett unikt ID på en access.",
+            "example": "STTA0001"
+          },
+          "service": {
+            "type": "string",
+            "description": "Anger teknisk tjänst som skall aktiveras/avaktiveras på accessen",
+            "example": "BB-100-10"
+          },
+          "operation": {
+            "type": "string",
+            "enum": [
+              "ACTIVATE",
+              "DEACTIVATE"
+            ],
+            "description": "Anger om tjänsten skall aktiveras eller avaktiveras",
+            "example": "DEACTIVATE"
+          },
+          "state": {
+            "type": "string",
+            "example": "DONE_SUCCESS"
+          },
+          "message": {
+            "type": "string",
+            "example": ""
+          }
+        }
+      },
+      "OrderEvents": {
+        "type": "object",
+        "properties": {
+          "event": {
+            "type": "string",
+            "description": "",
+            "example": "2a6d6432-e59d-11e3-9a52-3c970e806452"
+          },
+          "order": {
+            "$ref": "#/components/schemas/OrderEventsOrder"
+          }
+        }
+      },
+      "ServiceActivationGetOrder": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "example": "/api/2.3.1/orders/ec4bc754-6a30-11e2-a585-4fc569183061"
+          },
+          "accessId": {
+            "type": "string",
+            "description": "Ett unikt ID på en access.",
+            "example": "STTA0001"
+          },
+          "service": {
+            "type": "string",
+            "description": "Anger teknisk tjänst som skall aktiveras/avaktiveras på accessen",
+            "example": "BB-100-10"
+          },
+          "operation": {
+            "type": "string",
+            "enum": [
+              "ACTIVATE",
+              "DEACTIVATE"
+            ],
+            "description": "Anger om tjänsten skall aktiveras eller avaktiveras",
+            "example": "ACTIVATE"
+          },
+          "state": {
+            "type": "string",
+            "example": "RECEIVED"
+          },
+          "message": {
+            "type": "string",
+            "example": ""
+          }
+        }
+      },
+      "ServiceActivationOrderOK": {
+        "type": "object",
+        "properties": {
+          "accessId": {
+            "type": "string",
+            "description": "Ett unikt ID på en access.",
+            "example": "STTA0001"
+          },
+          "service": {
+            "type": "string",
+            "description": "Anger teknisk tjänst som skall aktiveras/avaktiveras på accessen",
+            "example": "BB-100-10"
+          },
+          "operation": {
+            "type": "string",
+            "enum": [
+              "ACTIVATE",
+              "DEACTIVATE"
+            ],
+            "description": "Anger om tjänsten skall aktiveras eller avaktiveras",
+            "example": "ACTIVATE"
+          },
+          "state": {
+            "type": "string",
+            "example": "DONE_SUCCESS"
+          },
+          "message": {
+            "type": "string",
+            "example": ""
+          }
+        }
+      },
+      "ServiceActivationOrderBadRequest": {
+        "type": "object",
+        "properties": {
+          "cause": {
+            "type": "string",
+            "example": "Unknown service: 'INTERNET_FLUGA'"
+          }
+        }
+      },
+      "ServiceActivationOrderResponseCreated": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "example": "/api/2.3.1/orders/ec4bc754-6a30-11e2-a585-4fc569183061"
+          },
+          "accessId": {
+            "type": "string",
+            "description": "Ett unikt ID på en access.",
+            "example": "STTA0001"
+          },
+          "service": {
+            "type": "string",
+            "description": "Anger teknisk tjänst som skall aktiveras/avaktiveras på accessen",
+            "example": "BB-100-10"
+          },
+          "operation": {
+            "type": "string",
+            "enum": [
+              "ACTIVATE",
+              "DEACTIVATE"
+            ],
+            "description": "Anger om tjänsten skall aktiveras eller avaktiveras",
+            "example": "ACTIVATE"
+          },
+          "state": {
+            "type": "string",
+            "example": "RECEIVED"
+          },
+          "message": {
+            "type": "string",
+            "example": ""
+          }
+        }
+      },
+      "ServiceActivationOrderEquipment": {
+        "type": "object",
+        "properties": {
+          "vendorId": {
+            "type": "string",
+            "description": "",
+            "example": "CH_BROADBAND"
+          },
+          "macAddress": {
+            "type": "string",
+            "description": "",
+            "example": "00:00:00:00:00:00"
+          }
+        }
+      },
+      "ServiceActivationOrder": {
+        "type": "object",
+        "properties": {
+          "accessId": {
+            "type": "string",
+            "description": "Ett unikt ID på en access",
+            "example": "STTA0001"
+          },
+          "service": {
+            "type": "string",
+            "description": "Anger teknisk tjänst som skall aktiveras/avaktiveras på accessen",
+            "example": "BB-100-10"
+          },
+          "operation": {
+            "type": "string",
+            "enum": [
+              "ACTIVATE",
+              "DEACTIVATE"
+            ],
+            "description": "Anger om tjänsten skall aktiveras eller avaktiveras.",
+            "example": "ACTIVATE"
+          },
+          "forcedTakeover": {
+            "type": "boolean",
+            "description": "Anger om anropande TLs beställning skall ersätta annan Service Providers aktiva tjänster",
+            "example": false
+          },
+          "equipment": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ServiceActivationOrderEquipment"
+            }
+          },
+          "spReference": {
+            "type": "string",
+            "description": "anger TLs referens på tjänsten. Används av TL för korrelering",
+            "example": ""
+          }
+        }
+      },
+      "FeasibilityServices": {
+        "type": "object",
+        "properties": {
+          "service": {
+            "type": "string",
+            "description": "Id/namn på tekniskt tjänst som avses",
+            "example": "BB-100-100"
+          },
+          "connection": {
+            "type": "string",
+            "description": "Anger när accessen kopplas in",
+            "example": "2014-03-01"
+          }
+        }
+      },
+      "AvailabilityServices": {
+        "type": "object",
+        "properties": {
+          "service": {
+            "type": "string",
+            "description": "Id/namn på tekniskt tjänst som avses",
+            "example": "BB-100-100"
+          },
+          "connection": {
+            "type": "string",
+            "description": "Anger när accessen kopplas in",
+            "example": "2014-03-01"
+          },
+          "available": {
+            "type": "string",
+            "description": "Anger om/när teknisk tjänst är/blir tillgänglig för beställning och leverans.",
+            "example": "YES"
+          },
+          "forcedTakeoverPossible": {
+            "type": "boolean",
+            "description": "Anger om flaggan 'force' i en beställning kommer att ha effekt.",
+            "example": false
+          }
+        }
+      },
+      "AvailabilityActive": {
+        "type": "object",
+        "properties": {
+          "service": {
+            "type": "string",
+            "description": "Service-namn på den aktiva tjänsten",
+            "example": "BB-100-10"
+          },
+          "option82": {
+            "type": "string",
+            "description": "Fältet används av tjänsteleverantör för att korrelera en DHCP förfrågan till en Access",
+            "example": "5216010765746820302F31020B31302E31302E31302E3130"
+          },
+          "equipment": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AvailabilityActiveEquipment"
+            }
+          },
+          "spReference": {
+            "type": "string",
+            "description": "",
+            "example": ""
+          }
+        }
+      },
+      "AvailabilityActiveEquipment": {
+        "type": "object",
+        "properties": {
+          "vendorId": {
+            "type": "string",
+            "description": "",
+            "example": "CH_BROADBAND"
+          }
+        }
+      },
+      "Feasibility": {
+        "type": "object",
+        "properties": {
+          "accessId": {
+            "type": "string",
+            "description": "Unikt ID på en access",
+            "example": "STTA0001"
+          },
+          "streetName": {
+            "type": "string",
+            "description": "Gatunamn",
+            "example": "Testvägen"
+          },
+          "streetNumber": {
+            "type": "string",
+            "description": "Gatunummer",
+            "example": "100"
+          },
+          "streetLittera": {
+            "type": "string",
+            "description": "Gatubokstav/Uppgång",
+            "example": ""
+          },
+          "postalCode": {
+            "type": "string",
+            "description": "Postnummer",
+            "example": "10000"
+          },
+          "city": {
+            "type": "string",
+            "description": "Postort",
+            "example": "Ankeborg"
+          },
+          "countryCode": {
+            "type": "string",
+            "description": "Landskod",
+            "example": "SE"
+          },
+          "premisesType": {
+            "type": "string",
+            "description": "Avlämningspunktens lokal",
+            "example": "MDU_APARTMENT"
+          },
+          "mduApartmentNumber": {
+            "type": "string",
+            "description": "Lägenhetsnummer enligt Lantmäteriet",
+            "example": "1001"
+          },
+          "mduDistinguisher": {
+            "type": "string",
+            "description": "Alternativ lokalbeteckning",
+            "example": "12121212"
+          },
+          "outlet": {
+            "type": "string",
+            "description": "Uttagsnummer",
+            "example": "A-11-14"
+          },
+          "population": {
+            "type": "string",
+            "description": "Delbestånd i hela beståndet",
+            "example": "Hemsöhem"
+          },
+          "services": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FeasibilityServices"
+            }
+          },
+          "coFiberConverter": {
+            "type": "string",
+            "description": "Typ av Fiber Konverter",
+            "example": "LASER_3001X_MK2"
+          },
+          "coCpeSwitch": {
+            "type": "string",
+            "description": "Om CPEn är en Switch, är detta typen som är inkopplad",
+            "example": ""
+          },
+          "coCpeRouter": {
+            "type": "string",
+            "description": "m CPEn är en Router, är detta typen som är inkopplad",
+            "example": "NETGEAR WNDR4000"
+          }
+        }
+      },
+      "Availability": {
+        "type": "object",
+        "properties": {
+          "accessId": {
+            "type": "string",
+            "description": "Unikt ID på en access",
+            "example": "STTA0001"
+          },
+          "streetName": {
+            "type": "string",
+            "description": "Gatunamn",
+            "example": "Testvägen"
+          },
+          "streetNumber": {
+            "type": "string",
+            "description": "Gatunummer",
+            "example": "100"
+          },
+          "streetLittera": {
+            "type": "string",
+            "description": "Gatubokstav/Uppgång",
+            "example": ""
+          },
+          "postalCode": {
+            "type": "string",
+            "description": "Postnummer",
+            "example": "10000"
+          },
+          "city": {
+            "type": "string",
+            "description": "Postort",
+            "example": "Ankeborg"
+          },
+          "countryCode": {
+            "type": "string",
+            "description": "Landskod",
+            "example": "SE"
+          },
+          "premisesType": {
+            "type": "string",
+            "description": "Avlämningspunktens lokal",
+            "example": "MDU_APARTMENT"
+          },
+          "mduApartmentNumber": {
+            "type": "string",
+            "description": "Lägenhetsnummer enligt Lantmäteriet",
+            "example": "1001"
+          },
+          "mduDistinguisher": {
+            "type": "string",
+            "description": "Alternativ lokalbeteckning",
+            "example": "12121212"
+          },
+          "outlet": {
+            "type": "string",
+            "description": "Uttagsnummer",
+            "example": "A-11-14"
+          },
+          "population": {
+            "type": "string",
+            "description": "Delbestånd i hela beståndet",
+            "example": "Hemsöhem"
+          },
+          "services": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AvailabilityServices"
+            }
+          },
+          "active": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AvailabilityActive"
+            }
+          },
+          "coFiberConverter": {
+            "type": "string",
+            "description": "Typ av Fiber Konverter",
+            "example": "LASER_3001X_MK2"
+          },
+          "coCpeSwitch": {
+            "type": "string",
+            "description": "Om CPEn är en Switch, är detta typen som är inkopplad",
+            "example": ""
+          },
+          "coCpeRouter": {
+            "type": "string",
+            "description": "Om CPEn är en Router, är detta typen som är inkopplad",
+            "example": "NETGEAR WNDR4000"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "basicAuth": []
+    }
+  ]
+}
